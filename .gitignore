@@ -1,14 +1,11 @@
 # Visual Studio 임시 및 캐시 파일 제외
 .vs/
-*.slnx
-[Db]b/
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
 
-# 빌드 결과물 제외
-Debug/
-Release/
-x64/
-x86/
+# 컴파일 출력 파일 및 실행 파일
+*.o
+run
+
+# VS Code 설정 폴더 및 OS 임시 파일
+.vscode/
+.DS_Store
+Thumbs.db
