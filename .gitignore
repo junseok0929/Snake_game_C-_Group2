@@ -1,0 +1,14 @@
+# Visual Studio 임시 및 캐시 파일 제외
+.vs/
+*.slnx
+[Db]b/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# 빌드 결과물 제외
+Debug/
+Release/
+x64/
+x86/
