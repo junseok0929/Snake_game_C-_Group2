@@ -1,5 +1,6 @@
 // Stage.cpp
 #include "Stage.h"
+#include <chrono>
 
 Stage::Stage()
 {
@@ -153,85 +154,93 @@ void Stage::play()
         appearItem(); // Spawn initial items immediately at stage start.
         // appearPlusGate();
         drawMap();
+
+        // 키 입력을 실시간으로 감지하기 위해 아주 짧은 타임아웃 설정
+        timeout(10);
+        auto lastTick = std::chrono::steady_clock::now();
+
         while (1)
         {
-            switch (getch())
+            int key = getch();
+            if (key != ERR)
             {
-            case LEFT:
-                dir = LEFT;
-                break;
-            case UP:
-                dir = UP;
-                break;
-            case RIGHT:
-                dir = RIGHT;
-                break;
-            case DOWN:
-                dir = DOWN;
-                break;
-            case PAUSE:
-                alert(y / 2 - 4, x / 2 - 34, "Press 'r' to play!", TRUE);
-                while (1)
+                if (key == LEFT || key == RIGHT || key == UP || key == DOWN)
                 {
-                    if (getch() == RESUME)
-                        break;
+                    dir = key; // 방향 업데이트 (반대 방향 필터링 없음 -> 누르면 기존처럼 죽음)
                 }
-                break;
-            case ESC:
-                endwin();
-                return;
-            }
-            moveSnake();
-            if (chkEnter)
-            {
-                int *stat = itemMission.getStat();
-                if (++n >= stat[0])
+                else if (key == PAUSE)
                 {
-                    disappearGate();
-                    // disappearPlusGate();
-                    appearGate();
-                    // appearPlusGate();
-                    n = 0;
-                    chkEnter = FALSE;
+                    alert(y / 2 - 4, x / 2 - 34, "Press 'r' to play!", TRUE);
+                    while (1)
+                    {
+                        if (getch() == RESUME)
+                            break;
+                    }
+                    lastTick = std::chrono::steady_clock::now(); // 일시정지 후 타이머 리셋
                 }
-            }
-            if (++msTime % (msDiv[speed - 1] * 10) == 0) // 일정 시간마다 아이템 생성
-            {
-                disappearItem();
-                appearItem();
+                else if (key == ESC)
+                {
+                    endwin();
+                    return;
+                }
             }
 
-            // 아이템을 모두 먹은 경우에는 주기를 기다리지 않고 즉시 재생성
-            bool hasItem = false;
-            for (int r = 0; r < MAP_ROW && !hasItem; r++)
+            // 실제 게임 로직 실행: 원래 설정된 timeoutMs 시간이 지났을 때만 실행
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTick).count();
+
+            if (elapsed >= timeoutMs)
             {
-                for (int c = 0; c < MAP_COL; c++)
+                lastTick = now; // 타이머 초기화
+
+                moveSnake();
+                if (chkEnter)
                 {
-                    if (map[r][c] == GROWTH_ITEM || map[r][c] == POISON_ITEM || map[r][c] == SPEED_SLOW)
+                    int *stat = itemMission.getStat();
+                    if (++n >= stat[0])
                     {
-                        hasItem = true;
-                        break;
+                        disappearGate();
+                        appearGate();
+                        n = 0;
+                        chkEnter = FALSE;
                     }
                 }
-            }
-            if (!hasItem)
-                appearItem();
+                if (++msTime % (msDiv[speed - 1] * 10) == 0)
+                {
+                    disappearItem();
+                    appearItem();
+                }
 
-            if (itemMission.getStat()[0] < 3)
-                gameOver();
-            if (isMissionClear())
-            {
-                alert(y / 2 - 4, x / 2 - 27, "Stage Clear!", FALSE);
-                speed++;
-                break;
+                bool hasItem = false;
+                for (int r = 0; r < MAP_ROW && !hasItem; r++)
+                {
+                    for (int c = 0; c < MAP_COL; c++)
+                    {
+                        if (map[r][c] == GROWTH_ITEM || map[r][c] == POISON_ITEM || map[r][c] == SPEED_SLOW)
+                        {
+                            hasItem = true;
+                            break;
+                        }
+                    }
+                }
+                if (!hasItem)
+                    appearItem();
+
+                if (itemMission.getStat()[0] < 3)
+                    gameOver();
+                if (isMissionClear())
+                {
+                    alert(y / 2 - 4, x / 2 - 27, "Stage Clear!", FALSE);
+                    speed++;
+                    break;
+                }
+                if (checkGameOver())
+                {
+                    alert(y / 2 - 4, x / 2 - 25, "Game Over!", FALSE);
+                    return;
+                }
+                drawMap();
             }
-            if (checkGameOver())
-            {
-                alert(y / 2 - 4, x / 2 - 25, "Game Over!", FALSE);
-                return;
-            }
-            drawMap();
-            timeout(timeoutMs);
         }
         level++;
     }
