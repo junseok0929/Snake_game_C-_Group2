@@ -4,27 +4,7 @@
 
 Stage::Stage()
 {
-    srand((unsigned)time(0)); // 시드값 설정
-    initscr();                // ncurses init
-    keypad(stdscr, TRUE);     // 키보드 입력 모드
-    cbreak();                 // 문자로 입력 받기
-    noecho();                 // 문자가 화면에 출력되지 않게 하기
-
-    start_color();             // 컬러모드
-    if (has_colors() == FALSE) // 컬러를 지원하지 않는 경우
-    {
-        endwin();
-        printf("Your terminal does not support color\n");
-        exit(1);
-    }
-    if (init_color(COLOR_BLUE, 0, 0, 300) == ERR) // COLOR_BLUE를 사용자 정의로 변경할 수 없는 경우
-    {
-        printw("Your terminal cannot change the color definitions\n");
-        printw("press any key to continue...\n");
-        getch(); // 사용자로부터 입력 대기, 사용자가 아무 키나 누를때까지 일시정지
-        moveSnake();
-    }
-
+    // 게임 진행에 필요한 색상만 초기화
     init_pair(EMPTY, COLOR_WHITE, COLOR_BLACK);
     init_pair(WALL, COLOR_BLACK, COLOR_WHITE);
     init_pair(IMMUNE_WALL, COLOR_BLACK, COLOR_WHITE);
@@ -35,40 +15,18 @@ Stage::Stage()
     init_pair(SPEED_SLOW, COLOR_BLACK, COLOR_RED);
     init_pair(GATE, COLOR_CYAN, COLOR_CYAN);
 
-    init_pair(10, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(11, COLOR_BLACK, COLOR_WHITE);
-    init_pair(12, COLOR_MAGENTA, COLOR_YELLOW);
-    init_pair(13, COLOR_WHITE, COLOR_WHITE);
-
-    menuLastFocus = 0,
-    speed = 2,
-    optLastFocus = speed - 1,
+    speed = 2;
     tcount = 0;
-    manualTitle = "< MANUAL >",
-    menuTitle = "< MENU >",
-    menuTxt[0] = " - PLAY: Start the game",
-    menuTxt[1] = " - HELP: Manual of the game",
-    menuTxt[2] = " - EXIT: Exit the game";
-    shorTitle = "< SHORTCUTS >";
-    shorTxt[0] = " - Arrow up(^): MOVE UP",
-    shorTxt[1] = " - Arrow down(v): MOVE DOWN",
-    shorTxt[2] = " - Arrow left(<): MOVE LEFT",
-    shorTxt[3] = " - Arrow right(>): MOVE RIGHT",
-    shorTxt[4] = " - 'p': GAME PAUSE",
-    shorTxt[5] = " - 'r': GAME RESUME",
-    shorTxt[6] = " - 'esc': BACK TO THE MAIN MENU";
+    level = 0;
+    y = 40; x = 120; // 맵 렌더링에 사용되는 기본 해상도
 }
 
 Stage::~Stage()
 {
-    delwin(scrollBar);
-    delwin(description);
-    delwin(manual);
-    delwin(info);
-    delwin(mission);
-    delwin(score);
-    delwin(game);
-    endwin();
+    if(info) delwin(info);
+    if(mission) delwin(mission);
+    if(score) delwin(score);
+    if(game) delwin(game);
 }
 
 /*void Stage::screenLock()
@@ -90,8 +48,8 @@ Stage::~Stage()
     hidTxtLen = txtLines - desSizeY > 0 ? txtLines - desSizeY : 0,
     scrollBarLen = desSizeY - hidTxtLen;
 }
-*/
-/*
+
+
 string Stage::menu()
 {
     clear();
@@ -137,29 +95,27 @@ string Stage::menu()
     }
     return NULL;
 }
+
 */
-/*
 void Stage::play()
 {
-    screenLock();
     setMap();
     int n;
     for (int i = 0; i < STAGE_NUM; i++)
     {
-        timeoutMs = speedMs[speed - 1];
+       timeoutMs = speedMs[speed - 1];
         msTime = n = 0;
         dir = LEFT;
         copyMap(i);
         setMission();
         makeSnake();
         gateManager.appearGate(map, level);
-        // appearPlusGate();
         drawMap();
 
         // 키 입력을 실시간으로 감지하기 위해 아주 짧은 타임아웃 설정
         timeout(10);
         auto lastTick = std::chrono::steady_clock::now();
-
+       
         while (1)
         {
             int key = getch();
@@ -184,6 +140,7 @@ void Stage::play()
                     endwin();
                     return;
                 }
+                
             }
 
             // 실제 게임 로직 실행: 원래 설정된 timeoutMs 시간이 지났을 때만 실행
@@ -245,9 +202,8 @@ void Stage::play()
         }
         level++;
     }
-    endwin();
 }
-*/
+
 /*
 void Stage::help()
 {

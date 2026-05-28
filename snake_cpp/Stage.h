@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <vector>
-#include <fstream>
 
 #include "Something.h"
 #include "ItemAndMission.h"
@@ -43,41 +42,25 @@ using namespace std;
 class Stage
 {
 public:
-
     Stage();
     ~Stage();
 
-
-    void screenLock();
-
-
-    string menu();
     void play();
-    void help();
-
 
     int getStageNum() const { return STAGE_NUM; }
     int getMapRow() const { return MAP_ROW; }
     int getMapCol() const { return MAP_COL; }
 
-
     void setMap();
     void copyMap(int nStage);
     void drawMap();
 
-
     void appearItem();
-    void appearGate();
     void disappearItem();
-    void disappearGate();
-
 
     void makeSnake();
     void moveSnake();
-    void enterGate(Something* head);
-    int findRoot(Something* gate);
     void eatItem(int item);
-
 
     void setMission();
     bool isMissionClear();
@@ -86,15 +69,10 @@ public:
     void alert(int posY, int posX, const string msg, bool stopFlag);
 
 private:
-
     WINDOW* game, * score, * mission, * info;
-    WINDOW* manual, * description, * scrollBar;
 
     const int SNAKE_MAX_LENGTH = 10;
     Something* Snail;
-    Something* gate1;
-    Something* gate2;
-
 
     const int STAGE_NUM = 4,
         MAP_ROW = 30,
@@ -103,30 +81,14 @@ private:
         COL_END = MAP_COL - 1;
     const string itemIndex = "  X0O+-                ";
 
-
     int*** stage, ** map;
 
-
-    int dir, y, x,
-        menuLastFocus, optLastFocus,
-        level, speed, tcount,
-        timeoutMs, msTime;
+    int dir, y, x, level, speed, tcount, timeoutMs, msTime;
     const int speedMs[5] = { 500,250,200,100,70 };
     const int msDiv[5] = { 2,4,5,10,20 };
 
-
-    string manualTitle, menuTitle, shorTitle;
-    string menuTxt[4], shorTxt[7];
-    int sizeY, sizeX,
-        startY, startX;
-    int desSizeY, desSizeX,
-        desStartY, desStartX;
-    int txtLines, hidTxtLen, scrollBarLen;
-
-    vector<string> manualTxt;
-
-    vector<pair<int, int>> itemPos, gatePos;
-    bool chkEnter, chkPlusEnter, finish;
+    vector<pair<int, int>> itemPos;
+    bool chkEnter, finish;
     ItemAndMission itemMission;
     GateManager gateManager;
 };
