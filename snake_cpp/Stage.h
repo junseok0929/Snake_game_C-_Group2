@@ -1,4 +1,5 @@
 //Stage.h
+#pragma once
 
 #ifndef __STAGE__
 #define __STAGE__
@@ -12,6 +13,7 @@
 
 #include "Something.h"
 #include "ItemAndMission.h"
+#include "GateManager.h"
 
 
 #define UP KEY_UP
@@ -34,7 +36,6 @@
 #define GATE 8
 #define SPEED_SLOW 7
 #define NUMBER_OF_ITEMS 3
-#define PLUS_GATE 12
 #define PLUS_EXIT 13
 
 using namespace std;
@@ -67,16 +68,13 @@ public:
 
     void appearItem();
     void appearGate();
-    void appearPlusGate();
     void disappearItem();
     void disappearGate();
-    void disappearPlusGate();
 
 
     void makeSnake();
     void moveSnake();
     void enterGate(Something* head);
-    void enterPlusGate(Something* head);
     int findRoot(Something* gate);
     void eatItem(int item);
 
@@ -96,8 +94,6 @@ private:
     Something* Snail;
     Something* gate1;
     Something* gate2;
-    Something* plusGate1;
-    Something* plusGate2;
 
 
     const int STAGE_NUM = 4,
@@ -129,8 +125,9 @@ private:
 
     vector<string> manualTxt;
 
-    vector<pair<int, int>> itemPos, gatePos, plusGatePos;
+    vector<pair<int, int>> itemPos, gatePos;
     bool chkEnter, chkPlusEnter, finish;
     ItemAndMission itemMission;
+    GateManager gateManager;
 };
 #endif

@@ -1,3 +1,5 @@
+#pragma once
+
 struct Something {
     int x;
     int y;
