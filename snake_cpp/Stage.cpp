@@ -1,26 +1,26 @@
-//Stage.cpp
+// Stage.cpp
 #include "Stage.h"
 
 Stage::Stage()
 {
-    srand((unsigned)time(0)); //시드값 설정
-    initscr(); //ncurses init
-    keypad(stdscr, TRUE); //키보드 입력 모드
-    cbreak(); //문자로 입력 받기
-    noecho(); //문자가 화면에 출력되지 않게 하기
+    srand((unsigned)time(0)); // 시드값 설정
+    initscr();                // ncurses init
+    keypad(stdscr, TRUE);     // 키보드 입력 모드
+    cbreak();                 // 문자로 입력 받기
+    noecho();                 // 문자가 화면에 출력되지 않게 하기
 
-    start_color(); //컬러모드
-    if (has_colors() == FALSE) //컬러를 지원하지 않는 경우
+    start_color();             // 컬러모드
+    if (has_colors() == FALSE) // 컬러를 지원하지 않는 경우
     {
         endwin();
         printf("Your terminal does not support color\n");
         exit(1);
     }
-    if (init_color(COLOR_BLUE, 0, 0, 300) == ERR) //COLOR_BLUE를 사용자 정의로 변경할 수 없는 경우 
+    if (init_color(COLOR_BLUE, 0, 0, 300) == ERR) // COLOR_BLUE를 사용자 정의로 변경할 수 없는 경우
     {
         printw("Your terminal cannot change the color definitions\n");
         printw("press any key to continue...\n");
-        getch(); // 사용자로부터 입력 대기, 사용자가 아무 키나 누를때까지 일시정지 
+        getch(); // 사용자로부터 입력 대기, 사용자가 아무 키나 누를때까지 일시정지
         moveSnake();
     }
 
@@ -40,22 +40,22 @@ Stage::Stage()
     init_pair(13, COLOR_WHITE, COLOR_WHITE);
 
     menuLastFocus = 0,
-        speed = 2,
-        optLastFocus = speed - 1,
-        tcount = 0;
+    speed = 2,
+    optLastFocus = speed - 1,
+    tcount = 0;
     manualTitle = "< MANUAL >",
-        menuTitle = "< MENU >",
-        menuTxt[0] = " - PLAY: Start the game",
-        menuTxt[1] = " - HELP: Manual of the game",
-        menuTxt[2] = " - EXIT: Exit the game";
+    menuTitle = "< MENU >",
+    menuTxt[0] = " - PLAY: Start the game",
+    menuTxt[1] = " - HELP: Manual of the game",
+    menuTxt[2] = " - EXIT: Exit the game";
     shorTitle = "< SHORTCUTS >";
     shorTxt[0] = " - Arrow up(^): MOVE UP",
-        shorTxt[1] = " - Arrow down(v): MOVE DOWN",
-        shorTxt[2] = " - Arrow left(<): MOVE LEFT",
-        shorTxt[3] = " - Arrow right(>): MOVE RIGHT",
-        shorTxt[4] = " - 'p': GAME PAUSE",
-        shorTxt[5] = " - 'r': GAME RESUME",
-        shorTxt[6] = " - 'esc': BACK TO THE MAIN MENU";
+    shorTxt[1] = " - Arrow down(v): MOVE DOWN",
+    shorTxt[2] = " - Arrow left(<): MOVE LEFT",
+    shorTxt[3] = " - Arrow right(>): MOVE RIGHT",
+    shorTxt[4] = " - 'p': GAME PAUSE",
+    shorTxt[5] = " - 'r': GAME RESUME",
+    shorTxt[6] = " - 'esc': BACK TO THE MAIN MENU";
 }
 
 Stage::~Stage()
@@ -78,16 +78,16 @@ void Stage::screenLock()
     y = 40, x = 120;
     mvprintw(y - 1, 0, "SnakeGame");
     sizeY = y / 1.5,
-        sizeX = x / 1.5,
-        startY = y / 2 - sizeY / 2,
-        startX = x / 2 - sizeX / 2,
-        desSizeY = sizeY - 6,
-        desSizeX = sizeX - 6,
-        desStartY = startY + 3,
-        desStartX = startX + 3,
-        txtLines = 26,
-        hidTxtLen = txtLines - desSizeY > 0 ? txtLines - desSizeY : 0,
-        scrollBarLen = desSizeY - hidTxtLen;
+    sizeX = x / 1.5,
+    startY = y / 2 - sizeY / 2,
+    startX = x / 2 - sizeX / 2,
+    desSizeY = sizeY - 6,
+    desSizeX = sizeX - 6,
+    desStartY = startY + 3,
+    desStartX = startX + 3,
+    txtLines = 26,
+    hidTxtLen = txtLines - desSizeY > 0 ? txtLines - desSizeY : 0,
+    scrollBarLen = desSizeY - hidTxtLen;
 }
 
 string Stage::menu()
@@ -136,8 +136,7 @@ string Stage::menu()
     return NULL;
 }
 
-
-vector<pair<int, int> > itemPos, gatePos; // , plusGatePos;
+vector<pair<int, int>> itemPos, gatePos; // , plusGatePos;
 void Stage::play()
 {
     screenLock();
@@ -236,12 +235,12 @@ void Stage::help()
         wattroff(manual, COLOR_PAIR(10));
 
         mvwprintw(description, 0 + ySize,
-            sizeX / 2 - menuTitle.length() / 2 - 3, "%s", menuTitle.c_str());
+                  sizeX / 2 - menuTitle.length() / 2 - 3, "%s", menuTitle.c_str());
         for (int i = 0; i < sizeof(menuTxt) / sizeof(menuTxt[0]); i++)
             mvwprintw(description, 2 + (i * 2) + ySize, sizeX / 2 - menuTxt[2].length() / 2 - 3, "%s", menuTxt[i].c_str());
 
         mvwprintw(description, 11 + ySize,
-            sizeX / 2 - shorTitle.length() / 2 - 3, "%s", shorTitle.c_str());
+                  sizeX / 2 - shorTitle.length() / 2 - 3, "%s", shorTitle.c_str());
         for (int i = 0; i < sizeof(shorTxt) / sizeof(shorTxt[0]); i++)
             mvwprintw(description, 13 + (i * 2) + ySize, sizeX / 2 - shorTxt[6].length() / 2 - 3, "%s", shorTxt[i].c_str());
 
@@ -280,37 +279,53 @@ void Stage::help()
     }
 }
 
-
-
+// 맵 생성 함수
+// 각 스테이지의 맵 데이터를 생성
+// 3차원 배열 stage[stage][row][col] 사용
 void Stage::setMap()
 {
     int i, j, k;
-    stage = new int** [STAGE_NUM];
+
+    // 스테이지 개수만큼 동적 할당
+    stage = new int **[STAGE_NUM];
+
     for (i = 0; i < STAGE_NUM; i++)
     {
-        stage[i] = new int* [MAP_ROW];
+        // 행(row) 생성
+        stage[i] = new int *[MAP_ROW];
+
         for (j = 0; j < MAP_ROW; j++)
         {
+            // 열(col) 생성
             stage[i][j] = new int[MAP_COL];
         }
     }
 
+    // 각 스테이지 맵 초기화
     for (i = 0; i < STAGE_NUM; i++)
     {
         for (j = 0; j < MAP_ROW; j++)
         {
             for (k = 0; k < MAP_COL; k++)
             {
+                // 가장자리는 WALL로 설정
                 if (!j || !k || j == ROW_END || k == COL_END)
                     stage[i][j][k] = WALL;
+
+                // 내부는 EMPTY로 설정
                 else
                     stage[i][j][k] = EMPTY;
             }
         }
+
+        // 모서리는 IMMUNE_WALL 설정
+        /* 반 벽(WALL)과는 다른 특수벽 ex) 맵 모서리, 벽이 겹치는 지점, 절대 없어지면 안 되는 벽 */
         stage[i][0][0] = IMMUNE_WALL;
         stage[i][0][COL_END] = IMMUNE_WALL;
         stage[i][ROW_END][0] = IMMUNE_WALL;
         stage[i][ROW_END][COL_END] = IMMUNE_WALL;
+
+        // Stage 2 내부 벽 생성 (장애물)
         if (i == 1)
         {
             for (int z = 10; z < 40; z++)
@@ -318,6 +333,8 @@ void Stage::setMap()
             for (int z = 10; z < 40; z++)
                 stage[i][MAP_ROW - 7][z] = WALL;
         }
+
+        // Stage 3 세로 벽 생성
         if (i == 2)
         {
             for (int z = 5; z < 20; z++)
@@ -325,10 +342,13 @@ void Stage::setMap()
             for (int z = 5; z < 20; z++)
                 stage[i][z][15] = WALL;
         }
+
+        // Stage 4 복합 벽 생성
         if (i == 3)
         {
             for (int z = 10; z < 40; z++)
             {
+                // 가운데 통로 생성
                 if (z > 22 && z < 27)
                     continue;
                 stage[i][7][z] = WALL;
@@ -339,6 +359,7 @@ void Stage::setMap()
                     continue;
                 stage[i][MAP_ROW - 7][z] = WALL;
             }
+            // 세로 벽 생성
             for (int z = 5; z < 20; z++)
             {
                 if (z > 10 && z < 14)
@@ -361,11 +382,20 @@ void Stage::setMap()
     }
 }
 
+// 스테이지 맵 복사 함수
+// stage 배열의 특정 스테이지를
+// 현재 게임용 map 배열로 복사
 void Stage::copyMap(int nStage)
 {
-    map = new int* [MAP_ROW];
+    // 현재 플레이할 맵 공간 동적 할당
+    map = new int *[MAP_ROW];
+
+    // 각 행(row)에 열(col) 공간 생성
     for (int i = 0; i < MAP_COL; i++)
         map[i] = new int[MAP_COL];
+
+    // 선택한 스테이지의 맵 데이터를
+    // 현재 게임 맵(map)으로 복사
     for (int i = 0; i < MAP_ROW; i++)
     {
         for (int j = 0; j < MAP_COL; j++)
@@ -373,48 +403,93 @@ void Stage::copyMap(int nStage)
     }
 }
 
+// 맵 출력 함수
+// ncurses를 이용해 게임 화면 출력
 void Stage::drawMap()
 {
-    game = newwin(MAP_ROW, MAP_COL,
-        y / 2 - MAP_ROW / 2, x / 2 - (MAP_COL / 2 + 16));
+    // 게임 맵 출력용 윈도우 생성
+    game = newwin(MAP_ROW, MAP_COL, y / 2 - MAP_ROW / 2, x / 2 - (MAP_COL / 2 + 16));
+
+    // 맵 전체 출력
     for (int i = 0; i < MAP_ROW; i++)
     {
         for (int j = 0; j < MAP_COL; j++)
         {
+            // 현재 좌표의 오브젝트 종류 저장
             int index = map[i][j];
+
+            // 해당 오브젝트 색상 적용
             wattron(game, COLOR_PAIR(index));
+
+            // 해당 위치에 문자 출력
             mvwaddch(game, i, j, itemIndex[index]);
+
+            // 색상 해제
             wattroff(game, COLOR_PAIR(index));
         }
+
         printw("\n");
     }
 
+    // SCORE 창 생성
     score = newwin(19, 30, y / 2 - (MAP_ROW / 2 + 4), x / 2 + MAP_COL / 2 - 7.4);
+
     wattron(score, COLOR_PAIR(10));
+
+    // 테두리 생성
     box(score, 0, 0);
+
+    // 제목 출력
     mvwprintw(score, 0, 10, "[ SCORE ]");
+
     wattroff(score, COLOR_PAIR(10));
+
+    // 게임 정보 출력
     mvwprintw(score, 3, 5, "Snake Length: %d / %d", stat[0], SNAKE_MAX_LENGTH);
+
     mvwprintw(score, 6, 5, "Growth Items: %d", stat[1]);
+
     mvwprintw(score, 9, 5, "Poison Items: %d", stat[2]);
+
     mvwprintw(score, 12, 5, "Slow Items: %d", stat[4]);
+
     mvwprintw(score, 15, 5, "Gate: %d", stat[3]);
 
+    // MISSION 창 생성
     mission = newwin(16, 30, y / 2 - (MAP_ROW / 2 + 4) + 19, x / 2 + MAP_COL / 2 - 7.4);
+
     wattron(mission, COLOR_PAIR(10));
+
+    // 테두리 생성
     box(mission, 0, 0);
+
+    // 제목 출력
     mvwprintw(mission, 0, 9, "[ MISSION ]");
+
     wattroff(mission, COLOR_PAIR(10));
+
+    // 미션 상태 출력
     mvwprintw(mission, 3, 5, "Snake Length: %d ( %c )", statMission[0], chkMission[0]);
+
     mvwprintw(mission, 6, 5, "Growth Items: %d ( %c )", statMission[1], chkMission[1]);
+
     mvwprintw(mission, 9, 5, "Poison Items: %d ( %c )", statMission[2], chkMission[2]);
+
     mvwprintw(mission, 12, 5, "Gate: %d ( %c )", statMission[3], chkMission[3]);
 
+    // 현재 스테이지 및 시간 출력
     info = newwin(4, 15, y / 2 - (MAP_ROW / 2 + 4), x / 2 + MAP_COL / 2 - 47.4);
+
+    // 현재 스테이지 번호 출력
     mvwprintw(info, 0, 1, "[ STAGE %d/%d ]", level + 1, STAGE_NUM);
+
+    // 플레이 시간 출력
     mvwprintw(info, 2, 3, "< %02d:%02d >", msTime / (msDiv[speed - 1] * 60), (msTime / msDiv[speed - 1]) % 60);
 
+    // 화면 갱신
     refresh();
+
+    // 각 윈도우 출력
     wrefresh(info);
     wrefresh(game);
     wrefresh(score);
@@ -435,8 +510,8 @@ void Stage::appearItem()
             if (map[y][x] == EMPTY &&
                 map[y][x - 1] != GATE && map[y][x + 1] != GATE &&
                 map[y + 1][x] != GATE && map[y - 1][x] != GATE) //&&
-                //map[y][x - 1] != PLUS_GATE && map[y][x + 1] != PLUS_GATE &&
-                //map[y + 1][x] != PLUS_GATE && map[y - 1][x] != PLUS_GATE)
+            // map[y][x - 1] != PLUS_GATE && map[y][x + 1] != PLUS_GATE &&
+            // map[y + 1][x] != PLUS_GATE && map[y - 1][x] != PLUS_GATE)
             {
                 map[y][x] = itemType;
                 itemPos.push_back(make_pair(y, x));
@@ -456,7 +531,7 @@ void Stage::appearGate()
     {
         while (1) // 조건에 맞는 벽 위치를 찾을 때까지 난수 생성
         {
-            n = rand() % (!level ? 4 : 5); // 0레벨 스테이지면 n에 4가 안나오도록. 0레벨 스테이지에는 가운데에 벽이 없으므로 (0~3: 좌/우/상/하에 gate가 위치, 4: 가운데에 gate가 위치)
+            n = rand() % (!level ? 4 : 5);                      // 0레벨 스테이지면 n에 4가 안나오도록. 0레벨 스테이지에는 가운데에 벽이 없으므로 (0~3: 좌/우/상/하에 gate가 위치, 4: 가운데에 gate가 위치)
             y = rand() % (MAP_ROW - (i ? 3 : 2)) + (i ? 2 : 1); // 두 게이트가 가장자리에 너무 가까이 붙어서, 억울하게 GameOver되는 상황을 방지하기 위해
             x = rand() % (MAP_COL - (i ? 3 : 2)) + (i ? 2 : 1); // 첫 번째 게이트와 두 번째 게이트의 좌표 생성 범위를 다르게 설정.
 
@@ -486,7 +561,7 @@ void Stage::appearGate()
             }
             if (map[y][x] == WALL) // 정말 벽이 존재하는지 최종 확인
             {
-                map[y][x] = GATE; // 벽이 존재하면 gate 지정
+                map[y][x] = GATE;                   // 벽이 존재하면 gate 지정
                 gatePos.push_back(make_pair(y, x)); // 게이트 생성 후, 일정 시간이 지난 뒤, disappearGate()에서 게이트를 삭제하기 위해 좌표 저장.
                 break;
             }
@@ -498,63 +573,63 @@ void Stage::appearGate()
     }
 }
 
-//void Stage::appearPlusGate() // 요건 삭제해야 할지도
+// void Stage::appearPlusGate() // 요건 삭제해야 할지도
 //{
-//    int n, y, x;
-//    for (int i = 0; i < 2; i++)
-//    {
-//        while (1)
-//        {
-//            n = rand() % (!level ? 4 : 5);
-//            y = rand() % (MAP_ROW - (i?3:2)) + (i?2:1);
-//            x = rand() % (MAP_COL - (i?3:2)) + (i?2:1);
-//            switch (n)
-//            {
-//            case 0:
-//                y = 0;
-//                break;
-//            case 1:
-//                x = 0;
-//                break;
-//            case 2:
-//                x = COL_END;
-//                break;
-//            case 3:
-//                y = ROW_END;
-//                break;
-//            case 4:
-//                while (1)
-//                {
-//                    // 가운데에 벽이 존재하는 맵에서의 벽이 존재하는 x,y 범위에서, 정말로 벽이 존재하는 부분을 찾을 때까지 while문
-//                    x = rand() % 30 + 10; // 10 ~ 39
-//                    y = rand() % 15 + 5;  // 5 ~ 19
-//                    if (map[y][x] == WALL && map[y][x] != GATE)
-//                        break;
-//                }
-//            }
-//            if(i==0){
-//                if (map[y][x] == WALL && map[y][x] != GATE )
-//                {
-//                    map[y][x] = PLUS_GATE;
-//                    plusGatePos.push_back(make_pair(y, x));
-//                    break;
-//                }
-//            }
-//            if(i==1){
-//               if (map[y][x] == WALL && map[y][x] != GATE && map[y][x] != PLUS_GATE )
-//                {
-//                    map[y][x] = PLUS_EXIT;
-//                    plusGatePos.push_back(make_pair(y, x));
-//                    break;
-//                }   
-//            }
-//        }
-//        if (i == 0)
-//            plusGate1 = new Something(y, x, PLUS_GATE);
-//        if (i == 1)
-//            plusGate2 = new Something(y, x, PLUS_EXIT);
-//    }
-//}
+//     int n, y, x;
+//     for (int i = 0; i < 2; i++)
+//     {
+//         while (1)
+//         {
+//             n = rand() % (!level ? 4 : 5);
+//             y = rand() % (MAP_ROW - (i?3:2)) + (i?2:1);
+//             x = rand() % (MAP_COL - (i?3:2)) + (i?2:1);
+//             switch (n)
+//             {
+//             case 0:
+//                 y = 0;
+//                 break;
+//             case 1:
+//                 x = 0;
+//                 break;
+//             case 2:
+//                 x = COL_END;
+//                 break;
+//             case 3:
+//                 y = ROW_END;
+//                 break;
+//             case 4:
+//                 while (1)
+//                 {
+//                     // 가운데에 벽이 존재하는 맵에서의 벽이 존재하는 x,y 범위에서, 정말로 벽이 존재하는 부분을 찾을 때까지 while문
+//                     x = rand() % 30 + 10; // 10 ~ 39
+//                     y = rand() % 15 + 5;  // 5 ~ 19
+//                     if (map[y][x] == WALL && map[y][x] != GATE)
+//                         break;
+//                 }
+//             }
+//             if(i==0){
+//                 if (map[y][x] == WALL && map[y][x] != GATE )
+//                 {
+//                     map[y][x] = PLUS_GATE;
+//                     plusGatePos.push_back(make_pair(y, x));
+//                     break;
+//                 }
+//             }
+//             if(i==1){
+//                if (map[y][x] == WALL && map[y][x] != GATE && map[y][x] != PLUS_GATE )
+//                 {
+//                     map[y][x] = PLUS_EXIT;
+//                     plusGatePos.push_back(make_pair(y, x));
+//                     break;
+//                 }
+//             }
+//         }
+//         if (i == 0)
+//             plusGate1 = new Something(y, x, PLUS_GATE);
+//         if (i == 1)
+//             plusGate2 = new Something(y, x, PLUS_EXIT);
+//     }
+// }
 
 void Stage::disappearItem()
 {
@@ -576,108 +651,163 @@ void Stage::disappearGate()
     gatePos.clear();
 }
 
-//void Stage::disappearPlusGate()
+// void Stage::disappearPlusGate()
 //{
-//    for (auto gate : plusGatePos)
-//    {
-//        if(map[gate.first][gate.second] == PLUS_GATE)
-//            map[gate.first][gate.second] = WALL;
-//        if(map[gate.first][gate.second] == PLUS_EXIT)
-//            map[gate.first][gate.second] = WALL;
-//    }
-//    plusGatePos.clear();
-//}
+//     for (auto gate : plusGatePos)
+//     {
+//         if(map[gate.first][gate.second] == PLUS_GATE)
+//             map[gate.first][gate.second] = WALL;
+//         if(map[gate.first][gate.second] == PLUS_EXIT)
+//             map[gate.first][gate.second] = WALL;
+//     }
+//     plusGatePos.clear();
+// }
 
+// 스네이크 생성 함수
+// 연결 리스트 형태로 Snake 생성
 void Stage::makeSnake()
 {
+    // 초기 길이 3
     stat[0] = 3;
+
     int row = 13;
     int col = 26;
+
+    // 첫 번째 몸통 생성 (Tail)
     Snail = new Something(row, col--, SNAKE_BODY);
-    Something* p = new Something(row, col--, SNAKE_BODY);
+
+    // 두 번째 몸통 생성
+    Something *p = new Something(row, col--, SNAKE_BODY);
+
+    // 첫 번째 몸통과 연결
     Snail->link = p;
+
+    // Head 생성
     p = new Something(row, col--, SNAKE_HEAD);
+
+    // 두 번째 몸통과 Head 연결
     Snail->link->link = p;
+
+    // 맵에 Snake 출력
     map[Snail->y][Snail->x] = Snail->who;
+
     p = Snail->link;
     map[p->y][p->x] = p->who;
+
     p = p->link;
     map[p->y][p->x] = p->who;
 }
 
+// 스네이크 이동 함수
+// 몸통 따라오기 + Head 이동 + 충돌 판정
 void Stage::moveSnake()
 {
-    if (map[Snail->y][Snail->x] != WALL) //본체 Head의 위치가 Wall이 아닌 경우
+    // Tail 위치를 EMPTY로 변경
+    if (map[Snail->y][Snail->x] != WALL) // 본체 Head의 위치가 Wall이 아닌 경우
         map[Snail->y][Snail->x] = EMPTY; // 해당 위치 -> 빈 공간 설정
-    Something* q = Snail;
-    Something* p = q->link;
-    while (p->link != NULL) //본체 body를 따라 노드를 이동하며 각 노드의 좌표를 이전 좌표로 업데이트 
+
+    // q : 이전 노드
+    // p : 현재 노드
+    Something *q = Snail;
+    Something *p = q->link;
+
+    // 몸통 이동
+    // 앞 노드 좌표를 뒤 노드가 따라감
+    while (p->link != NULL) // 본체 body를 따라 노드를 이동하며 각 노드의 좌표를 이전 좌표로 업데이트
     {
         q->x = p->x;
         q->y = p->y;
+
         q = p;
         p = p->link;
     }
-    if (dir == LEFT) //현재 방향에 따라 본체의 Head와 Head 다음 노드의 좌표 업데이트
+
+    // Head 이동
+    // 방향(dir)에 따라 좌표 변경
+    if (dir == LEFT) // 현재 방향에 따라 본체의 Head와 Head 다음 노드의 좌표 업데이트
     {
         map[p->y][p->x] = q->who;
+
         q->x = p->x;
         q->y = p->y;
+
         p->x--;
     }
     else if (dir == UP)
     {
         map[p->y][p->x] = q->who;
+
         q->x = p->x;
         q->y = p->y;
+
         p->y--;
     }
     else if (dir == RIGHT)
     {
         map[p->y][p->x] = q->who;
+
         q->x = p->x;
         q->y = p->y;
+
         p->x++;
     }
     else if (dir == DOWN)
     {
         map[p->y][p->x] = q->who;
+
         q->x = p->x;
         q->y = p->y;
+
         p->y++;
     }
-    if (map[p->y][p->x] == WALL || map[p->y][p->x] == SNAKE_BODY) //본체가 벽이나 다른 본체의 몸통
+
+    // 충돌 판정
+    // 벽 또는 몸통과 충돌 시 게임 종료
+    if (map[p->y][p->x] == WALL || map[p->y][p->x] == SNAKE_BODY) // 본체가 벽이나 다른 본체의 몸통
     {
         map[p->y][p->x] = IMMUNE_WALL;
         gameOver();
     }
+
+    // Gate 진입
     if (map[p->y][p->x] == GATE)
     {
         enterGate(p);
     }
-    //if (map[p->y][p->x] == PLUS_GATE)
+
+    // Plus Gate 진입
+    // if (map[p->y][p->x] == PLUS_GATE)
     //{
     //    enterPlusGate(p);
     //}
-    //if (map[p->y][p->x] == PLUS_EXIT)
+    // if (map[p->y][p->x] == PLUS_EXIT)
     //{
     //    enterPlusGate(p);
     //}
-    if (map[p->y][p->x] == GROWTH_ITEM) {
+
+    // 아이템 먹기
+    if (map[p->y][p->x] == GROWTH_ITEM)
+    {
         eatItem(GROWTH_ITEM);
     }
-    if (map[p->y][p->x] == POISON_ITEM) {
+
+    if (map[p->y][p->x] == POISON_ITEM)
+    {
         eatItem(POISON_ITEM);
     }
-    if (map[p->y][p->x] == SPEED_SLOW) {
+
+    if (map[p->y][p->x] == SPEED_SLOW)
+    {
         eatItem(SPEED_SLOW);
     }
+
+    // Head 위치를 맵에 반영
     map[p->y][p->x] = p->who;
 }
 
-void Stage::enterGate(Something* head)
+void Stage::enterGate(Something *head)
 {
-    chkEnter = TRUE; // 뱀이 게이트에 진입했음을 알리는 상태 플래그 (이 플래그는 play() 함수에서 뱀이 게이트를 통과한 후 일정 턴이 지나면 게이트를 소멸시키고 새로 생성하는 기준점 역할)
+    chkEnter = TRUE;                                // 뱀이 게이트에 진입했음을 알리는 상태 플래그 (이 플래그는 play() 함수에서 뱀이 게이트를 통과한 후 일정 턴이 지나면 게이트를 소멸시키고 새로 생성하는 기준점 역할)
     if (gate1->x == head->x && gate1->y == head->y) // head의 좌표와 gate의 좌표와 일치할 때,
     {
         if (gate2->x == 0) // 연결된 gate가 좌측벽에 붙어있으면
@@ -704,7 +834,8 @@ void Stage::enterGate(Something* head)
             head->y = ROW_END - 1;
             dir = UP; // head의 방향은 위쪽으로 향하도록
         }
-        else { // 연결된 gate가 맵 내부에 있다면
+        else
+        {                    // 연결된 gate가 맵 내부에 있다면
             findRoot(gate2); // findRoot()함수로 유효한 방향을 판단하고, (x,y) 설정
             if (dir == LEFT)
             {
@@ -754,7 +885,8 @@ void Stage::enterGate(Something* head)
             head->y = ROW_END - 1;
             dir = UP;
         }
-        else {
+        else
+        {
             findRoot(gate1);
             if (dir == LEFT)
             {
@@ -781,110 +913,110 @@ void Stage::enterGate(Something* head)
     stat[3]++; // 게이트 통과 횟수를 추적하는 stat 배열 3번 인덱스에 1 증가.
 }
 
-//void Stage::enterPlusGate(Something *head)
+// void Stage::enterPlusGate(Something *head)
 //{
-//    chkPlusEnter = TRUE;
-//    if (plusGate1->x == head->x && plusGate1->y == head->y)
-//    {
-//        if (plusGate2->x == 0)
-//        {
-//            head->x = 1;
-//            head->y = plusGate2->y;
-//            dir = RIGHT;
-//        }
-//        else if (plusGate2->x == COL_END)
-//        {
-//            head->x = COL_END - 1;
-//            head->y = plusGate2->y;
-//            dir = LEFT;
-//        }
-//        else if (plusGate2->y == 0)
-//        {
-//            head->x = plusGate2->x;
-//            head->y = 1;
-//            dir = DOWN;
-//        }
-//        else if (plusGate2->y == ROW_END)
-//        {
-//            head->x = plusGate2->x;
-//            head->y = ROW_END - 1;
-//            dir = UP;
-//        }
-//        findRoot(plusGate2);
-//        if (dir == LEFT)
-//        {
-//            head->x = plusGate2->x - 1;
-//            head->y = plusGate2->y;
-//        }
-//        else if (dir == UP)
-//        {
-//            head->x = plusGate2->x;
-//            head->y = plusGate2->y - 1;
-//        }
-//        else if (dir == RIGHT)
-//        {
-//            head->x = plusGate2->x + 1;
-//            head->y = plusGate2->y;
-//        }
-//        else if (dir == DOWN)
-//        {
-//            head->x = plusGate2->x;
-//            head->y = plusGate2->y + 1;
-//        }
-//    }
-//    else if (plusGate2->x == head->x && plusGate2->y == head->y)
-//    {
-//        if (plusGate1->x == 0)
-//        {
-//            head->x = 1;
-//            head->y = plusGate1->y;
-//            dir = RIGHT;
-//        }
-//        else if (plusGate1->x == COL_END)
-//        {
-//            head->x = COL_END - 1;
-//            head->y = plusGate1->y;
-//            dir = LEFT;
-//        }
-//        else if (plusGate1->y == 0)
-//        {
-//            head->x = plusGate1->x;
-//            head->y = 1;
-//            dir = DOWN;
-//        }
-//        else if (plusGate1->y == ROW_END)
-//        {
-//            head->x = plusGate1->x;
-//            head->y = ROW_END - 1;
-//            dir = UP;
-//        }
-//        findRoot(plusGate1);
-//        if (dir == LEFT)
-//        {
-//            head->x = plusGate1->x - 1;
-//            head->y = plusGate1->y;
-//        }
-//        else if (dir == UP)
-//        {
-//            head->x = plusGate1->x;
-//            head->y = plusGate1->y - 1;
-//        }
-//        else if (dir == RIGHT)
-//        {
-//            head->x = plusGate1->x + 1;
-//            head->y = plusGate1->y;
-//        }
-//        else if (dir == DOWN)
-//        {
-//            head->x = plusGate1->x;
-//            head->y = plusGate1->y + 1;
-//        }
-//    }
-//    stat[3]++;
-//}
+//     chkPlusEnter = TRUE;
+//     if (plusGate1->x == head->x && plusGate1->y == head->y)
+//     {
+//         if (plusGate2->x == 0)
+//         {
+//             head->x = 1;
+//             head->y = plusGate2->y;
+//             dir = RIGHT;
+//         }
+//         else if (plusGate2->x == COL_END)
+//         {
+//             head->x = COL_END - 1;
+//             head->y = plusGate2->y;
+//             dir = LEFT;
+//         }
+//         else if (plusGate2->y == 0)
+//         {
+//             head->x = plusGate2->x;
+//             head->y = 1;
+//             dir = DOWN;
+//         }
+//         else if (plusGate2->y == ROW_END)
+//         {
+//             head->x = plusGate2->x;
+//             head->y = ROW_END - 1;
+//             dir = UP;
+//         }
+//         findRoot(plusGate2);
+//         if (dir == LEFT)
+//         {
+//             head->x = plusGate2->x - 1;
+//             head->y = plusGate2->y;
+//         }
+//         else if (dir == UP)
+//         {
+//             head->x = plusGate2->x;
+//             head->y = plusGate2->y - 1;
+//         }
+//         else if (dir == RIGHT)
+//         {
+//             head->x = plusGate2->x + 1;
+//             head->y = plusGate2->y;
+//         }
+//         else if (dir == DOWN)
+//         {
+//             head->x = plusGate2->x;
+//             head->y = plusGate2->y + 1;
+//         }
+//     }
+//     else if (plusGate2->x == head->x && plusGate2->y == head->y)
+//     {
+//         if (plusGate1->x == 0)
+//         {
+//             head->x = 1;
+//             head->y = plusGate1->y;
+//             dir = RIGHT;
+//         }
+//         else if (plusGate1->x == COL_END)
+//         {
+//             head->x = COL_END - 1;
+//             head->y = plusGate1->y;
+//             dir = LEFT;
+//         }
+//         else if (plusGate1->y == 0)
+//         {
+//             head->x = plusGate1->x;
+//             head->y = 1;
+//             dir = DOWN;
+//         }
+//         else if (plusGate1->y == ROW_END)
+//         {
+//             head->x = plusGate1->x;
+//             head->y = ROW_END - 1;
+//             dir = UP;
+//         }
+//         findRoot(plusGate1);
+//         if (dir == LEFT)
+//         {
+//             head->x = plusGate1->x - 1;
+//             head->y = plusGate1->y;
+//         }
+//         else if (dir == UP)
+//         {
+//             head->x = plusGate1->x;
+//             head->y = plusGate1->y - 1;
+//         }
+//         else if (dir == RIGHT)
+//         {
+//             head->x = plusGate1->x + 1;
+//             head->y = plusGate1->y;
+//         }
+//         else if (dir == DOWN)
+//         {
+//             head->x = plusGate1->x;
+//             head->y = plusGate1->y + 1;
+//         }
+//     }
+//     stat[3]++;
+// }
 
 // 맵 내부에 위치한 벽에 게이트를 형성할 때, 어느 방향으로 빠져나와야 하는지 결정하는 함수
-int Stage::findRoot(Something* gate)
+int Stage::findRoot(Something *gate)
 {
     for (int i = 0; i < 4; i++) // 4방향(상,하,좌,우)을 탐색하기 위한 for문.
     {
@@ -926,7 +1058,7 @@ void Stage::eatItem(int item)
     {
         if (stat[0] == 10)
             return;
-        Something* p = new Something(Snail->y, Snail->x, SNAKE_BODY);
+        Something *p = new Something(Snail->y, Snail->x, SNAKE_BODY);
         if (Snail->x - Snail->link->x == 1)
             p->x++;
         else if (Snail->y - Snail->link->y == 1)
@@ -956,8 +1088,6 @@ void Stage::eatItem(int item)
     }
 }
 
-
-
 void Stage::setMission()
 {
     finish = chkEnter = FALSE;
@@ -965,14 +1095,11 @@ void Stage::setMission()
     memset(statMission, 0, sizeof(statMission));
     memset(chkMission, ' ', sizeof(chkMission));
 
-
     statMission[0] = 5;
     statMission[1] = 2;
     statMission[2] = 2;
     statMission[3] = 2;
-
 }
-
 
 bool Stage::isMissionClear()
 {
@@ -992,6 +1119,8 @@ bool Stage::isMissionClear()
     return FALSE;
 }
 
+// 게임 오버 함수
+// finish 값을 true로 변경
 void Stage::gameOver()
 {
     finish = true;
@@ -999,7 +1128,7 @@ void Stage::gameOver()
 
 void Stage::alert(int posY, int posX, const string msg, bool stopFlag)
 {
-    WINDOW* alert = newwin(7, msg.length() * 2, posY, posX);
+    WINDOW *alert = newwin(7, msg.length() * 2, posY, posX);
     box(alert, 0, 0);
     wattron(alert, COLOR_PAIR(0));
     wbkgd(alert, COLOR_PAIR(2));
