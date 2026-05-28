@@ -1,4 +1,4 @@
-//Stage.h
+// Stage.h
 
 #ifndef __STAGE__
 #define __STAGE__
@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "Something.h"
+#include "ItemAndMission.h" // ★ 1. 새로 만든 헤더 파일 추가
 
 
 #define UP KEY_UP
@@ -63,11 +64,9 @@ public:
     void copyMap(int nStage);
     void drawMap();
 
-    
-    void appearItem();
+    // ★ 2. 아이템 관련 함수 선언들 전부 삭제됨 (ItemAndMission으로 이동)
     void appearGate();
     void appearPlusGate();
-    void disappearItem();
     void disappearGate();
     void disappearPlusGate();
 
@@ -77,11 +76,10 @@ public:
     void enterGate(Something *head);
     void enterPlusGate(Something *head);
     int findRoot(Something *gate);
-    void eatItem(int item);
+    // ★ 3. eatItem(int item) 삭제됨 (ItemAndMission으로 이동)
 
     
-    void setMission();
-    bool isMissionClear();
+    // ★ 4. setMission(), isMissionClear() 선언 삭제됨 (ItemAndMission으로 이동)
     bool checkGameOver() { return finish; }
     void gameOver();
     void alert(int posY, int posX, const string msg, bool stopFlag);
@@ -91,12 +89,13 @@ private:
     WINDOW *game, *score, *mission, *info;
     WINDOW *manual, *description, *scrollBar;
 
-    
-    int stat[5];
+    // ★ 5. 본인 파트 데이터 멤버(stat) 삭제 및 새 매니저 객체 생성
+    ItemAndMission itemManager; 
+    int stat[1]; // Stage 내부에서 미세하게 쓰는 용도로 최소화하거나 지워도 무방 (구조 유지를 위해 보존 가능)
 
-    
-    char chkMission[4];
-    int statMission[4];
+    // ★ 6. 미션 관련 변수들 전부 삭제됨 (ItemAndMission으로 이동)
+    // char chkMission[4]; 
+    // int statMission[4]; 
 
     
     const int SNAKE_MAX_LENGTH = 10;
@@ -112,7 +111,7 @@ private:
               MAP_COL = 50,
               ROW_END = MAP_ROW - 1,
               COL_END = MAP_COL - 1;
-    const string itemIndex = "  X0O+-                ";
+    const string itemIndex = "  X0O+-                 ";
 
     
     int ***stage, **map;
@@ -136,7 +135,8 @@ private:
 
     vector<string> manualTxt;
 
-    vector<pair<int, int>> itemPos, gatePos, plusGatePos;
+    // ★ 7. itemPos 벡터 삭제됨 (ItemAndMission으로 이동)
+    vector<pair<int, int>> gatePos, plusGatePos;
     bool chkEnter, chkPlusEnter, finish;
 };
 #endif
