@@ -205,7 +205,7 @@ void Stage::play()
                         chkEnter = FALSE;
                     }
                 }
-                if (++msTime % (msDiv[speed - 1] * 10) == 0)
+                if (++msTime % (msDiv[speed - 1] * 20) == 0)
                 {
                     disappearItem();
                     appearItem();
