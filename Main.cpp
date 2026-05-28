@@ -4,13 +4,13 @@ int main()
 {
     Stage view = Stage();
     string game;
-    while(1){
+    while (1) {
         game = view.menu();
         clear();
-        
-        if(game == "PLAY")
+
+        if (game == "PLAY")
             view.play();
-        else if(game == "HELP")
+        else if (game == "HELP")
             view.help();
         else
             break;
