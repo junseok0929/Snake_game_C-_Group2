@@ -150,6 +150,7 @@ void Stage::play()
         setMission();
         makeSnake();
         appearGate();
+        appearItem(); // Spawn initial items immediately at stage start.
         // appearPlusGate();
         drawMap();
         while (1)
@@ -199,6 +200,23 @@ void Stage::play()
                 disappearItem();
                 appearItem();
             }
+
+            // 아이템을 모두 먹은 경우에는 주기를 기다리지 않고 즉시 재생성
+            bool hasItem = false;
+            for (int r = 0; r < MAP_ROW && !hasItem; r++)
+            {
+                for (int c = 0; c < MAP_COL; c++)
+                {
+                    if (map[r][c] == GROWTH_ITEM || map[r][c] == POISON_ITEM || map[r][c] == SPEED_SLOW)
+                    {
+                        hasItem = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasItem)
+                appearItem();
+
             if (itemMission.getStat()[0] < 3)
                 gameOver();
             if (isMissionClear())
