@@ -136,7 +136,6 @@ string Stage::menu()
     return NULL;
 }
 
-vector<pair<int, int>> itemPos, gatePos; // , plusGatePos;
 void Stage::play()
 {
     screenLock();
@@ -184,6 +183,7 @@ void Stage::play()
             moveSnake();
             if (chkEnter)
             {
+                int *stat = itemMission.getStat();
                 if (++n >= stat[0])
                 {
                     disappearGate();
@@ -199,7 +199,7 @@ void Stage::play()
                 disappearItem();
                 appearItem();
             }
-            if (stat[0] < 3)
+            if (itemMission.getStat()[0] < 3)
                 gameOver();
             if (isMissionClear())
             {
@@ -444,38 +444,9 @@ void Stage::drawMap()
 
     wattroff(score, COLOR_PAIR(10));
 
-    // 게임 정보 출력
-    mvwprintw(score, 3, 5, "Snake Length: %d / %d", stat[0], SNAKE_MAX_LENGTH);
-
-    mvwprintw(score, 6, 5, "Growth Items: %d", stat[1]);
-
-    mvwprintw(score, 9, 5, "Poison Items: %d", stat[2]);
-
-    mvwprintw(score, 12, 5, "Slow Items: %d", stat[4]);
-
-    mvwprintw(score, 15, 5, "Gate: %d", stat[3]);
-
     // MISSION 창 생성
     mission = newwin(16, 30, y / 2 - (MAP_ROW / 2 + 4) + 19, x / 2 + MAP_COL / 2 - 7.4);
-
-    wattron(mission, COLOR_PAIR(10));
-
-    // 테두리 생성
-    box(mission, 0, 0);
-
-    // 제목 출력
-    mvwprintw(mission, 0, 9, "[ MISSION ]");
-
-    wattroff(mission, COLOR_PAIR(10));
-
-    // 미션 상태 출력
-    mvwprintw(mission, 3, 5, "Snake Length: %d ( %c )", statMission[0], chkMission[0]);
-
-    mvwprintw(mission, 6, 5, "Growth Items: %d ( %c )", statMission[1], chkMission[1]);
-
-    mvwprintw(mission, 9, 5, "Poison Items: %d ( %c )", statMission[2], chkMission[2]);
-
-    mvwprintw(mission, 12, 5, "Gate: %d ( %c )", statMission[3], chkMission[3]);
+    itemMission.drawScoreAndMission(score, mission, SNAKE_MAX_LENGTH);
 
     // 현재 스테이지 및 시간 출력
     info = newwin(4, 15, y / 2 - (MAP_ROW / 2 + 4), x / 2 + MAP_COL / 2 - 47.4);
@@ -498,27 +469,7 @@ void Stage::drawMap()
 
 void Stage::appearItem()
 {
-    int appearNum = rand() % 3 + 1;
-    for (int i = 0; i < appearNum; i++)
-    {
-        int itemType = rand() % NUMBER_OF_ITEMS + 5;
-
-        while (1)
-        {
-            int y = rand() % (MAP_ROW - 2) + 1;
-            int x = rand() % (MAP_COL - 2) + 1;
-            if (map[y][x] == EMPTY &&
-                map[y][x - 1] != GATE && map[y][x + 1] != GATE &&
-                map[y + 1][x] != GATE && map[y - 1][x] != GATE) //&&
-            // map[y][x - 1] != PLUS_GATE && map[y][x + 1] != PLUS_GATE &&
-            // map[y + 1][x] != PLUS_GATE && map[y - 1][x] != PLUS_GATE)
-            {
-                map[y][x] = itemType;
-                itemPos.push_back(make_pair(y, x));
-                break;
-            }
-        }
-    }
+    itemMission.appearItem(map, level);
 }
 
 // 두 개의 게이트를 무작위 위치의 벽에 생성하는 코드
@@ -633,12 +584,7 @@ void Stage::appearGate()
 
 void Stage::disappearItem()
 {
-    for (auto item : itemPos)
-    {
-        if (map[item.first][item.second] == GROWTH_ITEM || map[item.first][item.second] == POISON_ITEM || map[item.first][item.second] == SPEED_SLOW)
-            map[item.first][item.second] = EMPTY;
-    }
-    itemPos.clear();
+    itemMission.disappearItem(map);
 }
 
 void Stage::disappearGate()
@@ -668,7 +614,7 @@ void Stage::disappearGate()
 void Stage::makeSnake()
 {
     // 초기 길이 3
-    stat[0] = 3;
+    itemMission.updateSnakeLengthStat(3);
 
     int row = 13;
     int col = 26;
@@ -910,7 +856,7 @@ void Stage::enterGate(Something *head)
             }
         }
     }
-    stat[3]++; // 게이트 통과 횟수를 추적하는 stat 배열 3번 인덱스에 1 증가.
+    itemMission.incrementGateStat(); // 게이트 통과 횟수 증가
 }
 
 // void Stage::enterPlusGate(Something *head)
@@ -1054,6 +1000,7 @@ int Stage::findRoot(Something *gate)
 
 void Stage::eatItem(int item)
 {
+    int *stat = itemMission.getStat();
     if (item == GROWTH_ITEM)
     {
         if (stat[0] == 10)
@@ -1071,52 +1018,35 @@ void Stage::eatItem(int item)
         Snail = p;
         if (map[Snail->y][Snail->x] != WALL)
             map[Snail->y][Snail->x] = Snail->who;
-        stat[0]++;
-        stat[1]++;
+        int snakeLength = stat[0];
+        itemMission.eatItem(GROWTH_ITEM, snakeLength, timeoutMs);
+        itemMission.updateSnakeLengthStat(snakeLength);
     }
     else if (item == POISON_ITEM)
     {
         map[Snail->y][Snail->x] = EMPTY;
         Snail = Snail->link;
-        stat[0]--;
-        stat[2]++;
+        int snakeLength = stat[0];
+        itemMission.eatItem(POISON_ITEM, snakeLength, timeoutMs);
+        itemMission.updateSnakeLengthStat(snakeLength);
     }
     else if (item == SPEED_SLOW)
     {
-        timeoutMs += 100;
-        stat[4]++;
+        int snakeLength = stat[0];
+        itemMission.eatItem(SPEED_SLOW, snakeLength, timeoutMs);
+        itemMission.updateSnakeLengthStat(snakeLength);
     }
 }
 
 void Stage::setMission()
 {
     finish = chkEnter = FALSE;
-    memset(stat, 0, sizeof(stat));
-    memset(statMission, 0, sizeof(statMission));
-    memset(chkMission, ' ', sizeof(chkMission));
-
-    statMission[0] = 5;
-    statMission[1] = 2;
-    statMission[2] = 2;
-    statMission[3] = 2;
+    itemMission.setMission();
 }
 
 bool Stage::isMissionClear()
 {
-    int count = 0;
-    for (int i = 0; i < 4; i++)
-    {
-        if (stat[i] >= statMission[i])
-        {
-            chkMission[i] = 'v';
-            count++;
-        }
-        else if (!i)
-            chkMission[i] = ' ';
-    }
-    if (count == 4)
-        return TRUE;
-    return FALSE;
+    return itemMission.isMissionClear();
 }
 
 // 게임 오버 함수
@@ -1132,7 +1062,7 @@ void Stage::alert(int posY, int posX, const string msg, bool stopFlag)
     box(alert, 0, 0);
     wattron(alert, COLOR_PAIR(0));
     wbkgd(alert, COLOR_PAIR(2));
-    mvwprintw(alert, 3, msg.length() / 2, msg.c_str());
+    mvwprintw(alert, 3, msg.length() / 2, "%s", msg.c_str());
     wrefresh(alert);
     if (!stopFlag)
         usleep(1750000);

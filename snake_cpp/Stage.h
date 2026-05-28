@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "Something.h"
+#include "ItemAndMission.h"
 
 
 #define UP KEY_UP
@@ -91,14 +92,6 @@ private:
     WINDOW* game, * score, * mission, * info;
     WINDOW* manual, * description, * scrollBar;
 
-
-    int stat[5];
-
-
-    char chkMission[4];
-    int statMission[4];
-
-
     const int SNAKE_MAX_LENGTH = 10;
     Something* Snail;
     Something* gate1;
@@ -138,5 +131,6 @@ private:
 
     vector<pair<int, int>> itemPos, gatePos, plusGatePos;
     bool chkEnter, chkPlusEnter, finish;
+    ItemAndMission itemMission;
 };
 #endif
