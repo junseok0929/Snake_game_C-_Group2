@@ -71,7 +71,7 @@ Stage::~Stage()
     endwin();
 }
 
-void Stage::screenLock()
+/*void Stage::screenLock()
 {
     cout << "\e[3;240;120t";
     cout << "\e[8;40;120t";
@@ -90,7 +90,8 @@ void Stage::screenLock()
     hidTxtLen = txtLines - desSizeY > 0 ? txtLines - desSizeY : 0,
     scrollBarLen = desSizeY - hidTxtLen;
 }
-
+*/
+/*
 string Stage::menu()
 {
     clear();
@@ -136,7 +137,8 @@ string Stage::menu()
     }
     return NULL;
 }
-
+*/
+/*
 void Stage::play()
 {
     screenLock();
@@ -245,7 +247,8 @@ void Stage::play()
     }
     endwin();
 }
-
+*/
+/*
 void Stage::help()
 {
     screenLock();
@@ -304,7 +307,7 @@ void Stage::help()
         }
     }
 }
-
+*/
 // 맵 생성 함수
 // 각 스테이지의 맵 데이터를 생성
 // 3차원 배열 stage[stage][row][col] 사용
