@@ -194,7 +194,7 @@ void Stage::play()
                     chkEnter = FALSE;
                 }
             }
-            if (++msTime % (msDiv[speed - 1] * 5) == 0)
+            if (++msTime % (msDiv[speed - 1] * 10) == 0) // 일정 시간마다 아이템 생성
             {
                 disappearItem();
                 appearItem();
